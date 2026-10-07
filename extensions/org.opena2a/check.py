@@ -44,19 +44,28 @@ def load_attributes(registry):
     return attrs
 
 
+def _has_id(attr):
+    return isinstance(attr.get("id"), str) and bool(attr["id"])
+
+
 def check_registry(attrs):
     errors = []
-    ids = [a.get("id") for a in attrs]
+    ids = [a.get("id") for a in attrs if _has_id(a)]
+    if len(ids) != len(attrs):
+        errors.append(f"registry: {len(attrs) - len(ids)} attribute(s) without an id")
     if sorted(ids) != sorted(EXPECTED_IDS):
         errors.append(f"registry defines {sorted(ids)}, expected exactly {sorted(EXPECTED_IDS)}")
     for attr in attrs:
-        aid = attr.get("id") or "<missing id>"
-        if FORBIDDEN_NAMESPACE.match(aid):
-            errors.append(f"{aid}: gen_ai.* and fga.* are not this folder's namespace")
-        if not aid.startswith(PREFIX):
-            errors.append(f"{aid}: not in the {PREFIX}* namespace")
-        if not NAME.match(aid) or CONSECUTIVE_DELIMITERS.search(aid):
-            errors.append(f"{aid}: name does not follow the semantic-conventions name format")
+        if _has_id(attr):
+            aid = attr["id"]
+            if FORBIDDEN_NAMESPACE.match(aid):
+                errors.append(f"{aid}: gen_ai.* and fga.* are not this folder's namespace")
+            if not aid.startswith(PREFIX):
+                errors.append(f"{aid}: not in the {PREFIX}* namespace")
+            if not NAME.match(aid) or CONSECUTIVE_DELIMITERS.search(aid):
+                errors.append(f"{aid}: name does not follow the semantic-conventions name format")
+        else:
+            aid = "<missing id>"
         if attr.get("stability") != "development":
             errors.append(f"{aid}: stability is {attr.get('stability')!r}, expected 'development'")
         if not str(attr.get("brief") or "").strip():
@@ -91,7 +100,12 @@ def span_attributes(otlp):
     ]
     if len(spans) != 1:
         raise ValueError(f"expected one example span, found {len(spans)}")
-    return {a["key"]: a.get("value") or {} for a in spans[0].get("attributes") or []}
+    attributes = spans[0].get("attributes") or []
+    keys = [a["key"] for a in attributes]
+    duplicates = sorted({k for k in keys if keys.count(k) > 1})
+    if duplicates:
+        raise ValueError(f"duplicate attribute keys {duplicates}; OTLP requires unique keys")
+    return {a["key"]: a.get("value") or {} for a in attributes}
 
 
 def _string_array(value):
@@ -103,7 +117,7 @@ def _string_array(value):
 
 def check_span(span_attrs, attrs):
     errors = []
-    defined = {a["id"]: a for a in attrs if "id" in a}
+    defined = {a["id"]: a for a in attrs if _has_id(a)}
     for key, value in span_attrs.items():
         if key in UPSTREAM_ATTRIBUTES:
             if "stringValue" not in value:
@@ -152,9 +166,11 @@ def check_readme(text, attrs):
     if SEMCONV_RELEASE not in relation:
         errors.append(f"README: relation table does not name semantic-conventions {SEMCONV_RELEASE}")
     for attr in attrs:
-        row = re.compile(r"^\|\s*`" + re.escape(attr.get("id", "")) + r"`\s*\|", re.MULTILINE)
+        if not _has_id(attr):
+            continue
+        row = re.compile(r"^\|\s*`" + re.escape(attr["id"]) + r"`\s*\|", re.MULTILINE)
         if not row.search(relation):
-            errors.append(f"README: no relation table row for {attr.get('id')}")
+            errors.append(f"README: no relation table row for {attr['id']}")
     return errors
 
 

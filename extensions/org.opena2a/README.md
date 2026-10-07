@@ -34,7 +34,7 @@ Each attribute records a value that another specification already defines. The h
 | `org.opena2a.egress.decision` | enum: `allowed`, `denied`, `escalation_approved` | Broker profile §6.10 rule 3; AAP-SPEC §4.4.1 (`egressCeiling`) |
 | `org.opena2a.threat.technique_id` | string | [AI Agent Threat Matrix](https://threats.opena2a.org) technique ids (`T-NNNN`, `T-NNNN.NNN`) |
 
-Labels are sets, not levels, as AAP-SPEC §4.4.2 defines them. Producers emit a label set sorted and without duplicates, so equal sets compare equal. An empty array and an absent attribute mean different things: an empty `session.label` says the session has admitted no labeled field, while an absent one says the producer holds no session label for the agent.
+Labels are sets, not levels, as AAP-SPEC §4.4.2 defines them. Producers SHOULD emit a label set sorted and without duplicates, so equal sets compare equal. `org.opena2a.session.label` keeps a singular name although its value is an array: it names one value, the AAP session label, which is itself a set, and mirrors the `session_label` claim. An empty array and an absent attribute mean different things: an empty `session.label` says the session has admitted no labeled field, while an absent one says the producer holds no session label for the agent.
 
 ## Example span
 
@@ -58,7 +58,7 @@ Measured against [semantic-conventions v1.44.0](https://github.com/open-telemetr
 | `org.opena2a.egress.decision` | `aspnetcore.authorization.result` (v1.44.0, `success` / `failure`) | Same pattern, different scope. That attribute is specific to ASP.NET Core and records whether authorization succeeded; this records a label-ceiling egress check, including approval through an escalation hook. |
 | `org.opena2a.threat.technique_id` | `security_rule.category`, `security_rule.reference`, `security_rule.uuid` (v1.44.0) | Complementary. `security_rule.*` describes the detection rule that fired; the technique id names the attack technique in a public taxonomy. Both can appear on one span. |
 
-The filed proposal's `fga.outcome` records the fine-grained authorization decision path. `org.opena2a.egress.decision` records a later, separate check: whether the data a session already holds may leave it.
+`fga.outcome` ([open-telemetry/semantic-conventions-genai#180](https://github.com/open-telemetry/semantic-conventions-genai/issues/180), deferred from #291) records the outcome of a fine-grained authorization step. `org.opena2a.egress.decision` records a later, separate check: whether the data a session already holds may leave it.
 
 ## Why a vendor namespace
 

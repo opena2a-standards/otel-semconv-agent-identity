@@ -19,6 +19,22 @@ so entries are dated by proposal milestone rather than release version.
   the AAP or AI Agent Threat Matrix section that defines its value; one example
   span; a relation table measured against semantic-conventions v1.44.0; and a
   consistency check with tests. The filed proposal in `registry/` is unchanged.
+- Top-level README section pointing to `extensions/org.opena2a/`. (#4)
+- Failing-case tests for every check in `extensions/org.opena2a/check.py`,
+  including its exit code. (#4)
+
+### Changed
+
+- `extensions/org.opena2a/`: the registry note and README explain why
+  `org.opena2a.session.label` keeps a singular name for an array value; the
+  README states label-set ordering as a SHOULD, matching the registry, and
+  places `fga.outcome` in issue #180 (deferred from #291). (#4)
+
+### Fixed
+
+- `extensions/org.opena2a/check.py` reports an attribute without an id as a
+  FAIL line instead of crashing, and rejects duplicate attribute keys in the
+  example span instead of keeping the last one. (#4)
 
 ## 2026-06-15 — gen_ai.agent.* namespace sync
 

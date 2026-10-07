@@ -29,6 +29,12 @@ groups:
           Label values are the opaque strings defined by AAP section 4.4.2 (for example
           `internal` or `residency:eu`). They are recorded as the producer received them and are
           never normalized or remapped by the instrumentation.
+
+          The name is singular although the value is an array, a deliberate deviation from the
+          attribute name pluralization guidelines (semantic-conventions v1.44.0,
+          docs/general/naming.md). It names one value, the session label of AAP-SPEC section
+          6.4, which is itself a set of labels, and keeps the attribute aligned with the
+          `session_label` claim it mirrors.
         examples:
           - ["internal"]
           - ["internal", "residency:eu"]

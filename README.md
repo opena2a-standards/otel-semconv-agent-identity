@@ -27,6 +27,10 @@ FGA decision path (namespace placement pending the working-group decision in #18
 
 See `registry/agent.yaml` and `registry/fga.yaml` for full definitions.
 
+## Vendor attributes
+
+`extensions/org.opena2a/` defines five `org.opena2a.*` vendor attributes for agent authorization spans: session and accessed data labels, the grant id, the egress decision, and the threat technique id. They are not filed upstream and are not part of #291 or #180. See `extensions/org.opena2a/README.md` for the definitions, an example span and the consistency check.
+
 ## Framing
 
 The `trust.score`, `drift.score`, and `scan.verdict` attributes are producer-emitted decision inputs, not normative computed values. The producer computes the score (or selects the verdict) using whatever method makes sense for their domain. The convention only standardizes the attribute name, type, and range (or value set) so downstream observers can correlate. Each is paired with a `.method` token — an opaque, producer-scoped string for the method and version that produced the value, compared for equality only — so a consumer can distinguish a change in the scoring method from a real change in the agent's behaviour. Producers documenting their scoring or scanning methodology is recommended but not normative.

@@ -1,1 +1,1 @@
-docs + proposal-spec repo: YAMLs, README, mirrored OBSERVABILITY.md, one example file. No build or test surface that warrants the 8-phase pre-push gate.
+docs + proposal-spec repo: YAMLs, READMEs, example files, and one Python consistency check (extensions/org.opena2a/check.py, PyYAML) with unit tests in extensions/org.opena2a/test_check.py. No package, build, publish or service surface that warrants the 8-phase pre-push gate. Before pushing a change under extensions/org.opena2a/, run the two commands in extensions/org.opena2a/README.md ("Check the folder").
