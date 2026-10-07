@@ -1,0 +1,126 @@
+groups:
+  - id: registry.org.opena2a
+    type: attribute_group
+    display_name: OpenA2A Vendor Attributes
+    brief: >
+      Vendor attributes in the org.opena2a.* namespace for observing data clearance, grant, and
+      threat technique context on agent authorization spans. Not filed with any OpenTelemetry
+      working group: there is no upstream venue for them. Separate from the filed proposal in
+      registry/agent.yaml and registry/fga.yaml, which this group does not change.
+    attributes:
+      - id: org.opena2a.session.label
+        type: string[]
+        stability: development
+        brief: >
+          The session label at the moment of the decision: the set of labels of every field
+          admitted into the agent's session at the broker so far.
+        note: |
+          Home: Agent Authorization Protocol (AAP), AAP-SPEC section 4.4.2 (label semantics) and
+          section 6.4 (the `session_label` claim of the L3 Behavioral Attestation Claim); the
+          broker maintains it under AAP-BROKER-PROFILE section 6.10, rule 2 (session high water
+          mark). The value SHOULD equal the `session_label` the broker would put in an L3 BAC
+          for the same subject at the same instant.
+
+          Labels are a set, not a level: order carries no meaning and producers SHOULD emit the
+          labels sorted and without duplicates so equal sets compare equal. An empty array means
+          the session has admitted no labeled field; absence means the producer holds no high
+          water mark for the subject. The two are distinct, as they are for the claim.
+
+          Label values are the opaque strings defined by AAP section 4.4.2 (for example
+          `internal` or `residency:eu`). They are recorded as the producer received them and are
+          never normalized or remapped by the instrumentation.
+        examples:
+          - ["internal"]
+          - ["internal", "residency:eu"]
+      - id: org.opena2a.data.labels_accessed
+        type: string[]
+        stability: development
+        brief: >
+          The set of labels of the fields this operation admitted into the agent's context.
+        note: |
+          Home: Agent Authorization Protocol (AAP), AAP-SPEC section 4.4.2 (label, label set,
+          ceiling) and AAP-BROKER-PROFILE section 6.10, rule 1 (no read above ceiling).
+
+          Counts only fields that crossed into the agent context after projection and masking.
+          A field the broker projected out or masked contributes nothing. The value is therefore
+          always a subset of `org.opena2a.session.label` recorded after the same operation.
+          Set on spans for operations that admit data (a `data` entry with a read action);
+          not set on spans for operations that admit nothing. Same set rules as
+          `org.opena2a.session.label`: sorted, no duplicates, empty array when the operation
+          admitted only unlabeled fields.
+        examples:
+          - ["internal"]
+          - ["internal", "residency:eu"]
+      - id: org.opena2a.grant.id
+        type: string
+        stability: development
+        brief: >
+          The `jti` of the AAP Capability Grant Token or Delegation Assertion under which the
+          operation was exercised.
+        note: |
+          Home: Agent Authorization Protocol (AAP), AAP-SPEC section 4.2 (the CGT `jti` claim,
+          32 lowercase hexadecimal characters, `^[0-9a-f]{32}$` in both claim schemas),
+          section 5 (the Delegation Assertion), and
+          section 7.3 (the grant revocation list, which is keyed by this value). Recording it
+          lets an operator go from a span to the exact grant to revoke.
+
+          This is a token identifier, not a credential: instrumentation MUST NOT record the
+          token itself, any downstream credential, or the agent-facing grant reference
+          (`grant://name`, AAP-BROKER-PROFILE section 4).
+        examples:
+          - "9f8e7d6c5b4a39281706f5e4d3c2b1a0"
+      - id: org.opena2a.egress.decision
+        type:
+          members:
+            - id: allowed
+              value: "allowed"
+              brief: >
+                The session label is a subset of the entry's egress ceiling; the data left the
+                session.
+              stability: development
+            - id: denied
+              value: "denied"
+              brief: >
+                The session label is not a subset of the entry's egress ceiling and no approval
+                was returned; the data did not leave the session.
+              stability: development
+            - id: escalation_approved
+              value: "escalation_approved"
+              brief: >
+                The egress ceiling denied the egress and the deployment's escalation hook
+                returned an approval; the data left the session.
+              stability: development
+        stability: development
+        brief: >
+          Outcome of the broker's no-write-down check for an operation that can carry data out
+          of the session.
+        note: |
+          Home: Agent Authorization Protocol (AAP), AAP-BROKER-PROFILE section 6.10, rule 3 (no
+          write down, deny by default, the optional escalation hook) and AAP-SPEC section 4.4.1
+          (the `egressCeiling` member of the `mcp_tool`, `peer_agent`, `model`, `network`, and
+          write-action `data` entry types).
+
+          Set only on spans for operations that the rule checks. The agent receives the same
+          opaque denial whatever the cause (AAP-BROKER-PROFILE section 6.6); this attribute is
+          operator-side telemetry and MUST NOT be returned to the agent context.
+        examples:
+          - "denied"
+      - id: org.opena2a.threat.technique_id
+        type: string
+        stability: development
+        brief: >
+          The AI Agent Threat Matrix technique id the producer associates with this decision or
+          detection.
+        note: |
+          Home: AI Agent Threat Matrix (opena2a-standards/agent-threat-matrix, published at
+          https://threats.opena2a.org). Values match the matrix `techniqueId` pattern
+          `^T-[0-9]{4}(\.[0-9]{3})?$` and MUST resolve to a technique in the matrix's
+          `matrix.json`. Producers MUST NOT mint, derive, or renumber ids: the matrix owns every
+          id, and retires one by marking it `deprecated` with a `replacedBy` id.
+
+          Complements `security_rule.*`: those attributes describe the detection rule that
+          fired, this one names the technique in a public taxonomy. Both can appear on the same
+          span.
+        examples:
+          - "T-8004"
+          - "T-2001"
