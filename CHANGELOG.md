@@ -12,6 +12,13 @@ so entries are dated by proposal milestone rather than release version.
 ### Added
 
 - This changelog.
+- `extensions/org.opena2a/`: five vendor attributes, not filed upstream
+  (`org.opena2a.session.label`, `org.opena2a.data.labels_accessed`,
+  `org.opena2a.grant.id`, `org.opena2a.egress.decision`,
+  `org.opena2a.threat.technique_id`) at stability `development`, each citing
+  the AAP or AI Agent Threat Matrix section that defines its value; one example
+  span; a relation table measured against semantic-conventions v1.44.0; and a
+  consistency check with tests. The filed proposal in `registry/` is unchanged.
 
 ## 2026-06-15 — gen_ai.agent.* namespace sync
 

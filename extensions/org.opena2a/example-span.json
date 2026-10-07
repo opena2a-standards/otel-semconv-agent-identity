@@ -1,0 +1,44 @@
+{
+  "resourceSpans": [
+    {
+      "resource": {
+        "attributes": [
+          { "key": "service.name", "value": { "stringValue": "aap-broker" } }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": { "name": "aap-broker" },
+          "spans": [
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "eee19b7ec3c1b174",
+              "parentSpanId": "eee19b7ec3c1b173",
+              "name": "egress mcp_tool",
+              "kind": 1,
+              "startTimeUnixNano": "1780315230000000000",
+              "endTimeUnixNano": "1780315230004000000",
+              "attributes": [
+                { "key": "gen_ai.agent.id", "value": { "stringValue": "did:opena2a:agent:acme/orders-reader" } },
+                { "key": "org.opena2a.grant.id", "value": { "stringValue": "4b1d2c3e5f60718293a4b5c6d7e8f901" } },
+                {
+                  "key": "org.opena2a.session.label",
+                  "value": {
+                    "arrayValue": {
+                      "values": [
+                        { "stringValue": "internal" },
+                        { "stringValue": "residency:eu" }
+                      ]
+                    }
+                  }
+                },
+                { "key": "org.opena2a.egress.decision", "value": { "stringValue": "denied" } },
+                { "key": "org.opena2a.threat.technique_id", "value": { "stringValue": "T-8004" } }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
