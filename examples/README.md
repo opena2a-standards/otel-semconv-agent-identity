@@ -96,6 +96,14 @@ python examples/minimal_langchain_agent.py
 
 If no Tempo or OpenTelemetry collector is running locally, the spans are still created. The `BatchSpanProcessor` logs an export error in the background and the script exits cleanly.
 
+## Tests
+
+`test_links.py` checks that the files in this folder link to this repository under its current organization. Run it from the repository root:
+
+```
+python3 -m unittest discover -s examples -p 'test_*.py'
+```
+
 ## License
 
 Apache 2.0.

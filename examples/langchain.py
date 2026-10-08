@@ -1,6 +1,6 @@
 """LangChain to OpenTelemetry bridge emitting OpenA2A agent identity semantic conventions.
 
-This file is part of the proposal at https://github.com/opena2a-org/otel-semconv-agent-identity.
+This file is part of the proposal at https://github.com/opena2a-standards/otel-semconv-agent-identity.
 
 Add ten lines to your existing LangChain agent setup to emit the gen_ai.agent.* identity,
 capability, score, and FGA outcome attributes on OpenTelemetry spans. See examples/README.md
@@ -56,7 +56,7 @@ except ImportError:  # pragma: no cover
 
 
 # Attribute names track the proposed convention at
-# https://github.com/opena2a-org/otel-semconv-agent-identity/blob/main/registry/agent.yaml
+# https://github.com/opena2a-standards/otel-semconv-agent-identity/blob/main/registry/agent.yaml
 # and upstream open-telemetry/semantic-conventions-genai#291. Scores are scoped under the
 # gen_ai.agent.* namespace and each carries an opaque .method token.
 ATTR_AGENT_ID = "gen_ai.agent.id"

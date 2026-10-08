@@ -3,6 +3,7 @@ import copy
 import io
 import json
 import pathlib
+import re
 import shutil
 import tempfile
 import unittest
@@ -35,6 +36,13 @@ def copy_folder(target):
 class FolderTest(unittest.TestCase):
     def test_folder_is_consistent(self):
         self.assertEqual(check.check_folder(FOLDER), [])
+
+    def test_readmes_use_the_registry_taxonomy_name(self):
+        note = {a["id"]: a for a in registry_attrs()}["org.opena2a.threat.technique_id"]["note"]
+        name = re.match(r"Home: (.+?) \(", note).group(1)
+        for readme in (FOLDER / "README.md", FOLDER.parents[1] / "README.md"):
+            text = readme.read_text()
+            self.assertEqual(text.count("Threat Matrix"), text.count(name), readme)
 
     def test_no_gen_ai_or_fga_ids(self):
         text = (FOLDER / "registry.yaml").read_text()

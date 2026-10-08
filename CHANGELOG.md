@@ -35,6 +35,15 @@ so entries are dated by proposal milestone rather than release version.
 - `extensions/org.opena2a/check.py` reports an attribute without an id as a
   FAIL line instead of crashing, and rejects duplicate attribute keys in the
   example span instead of keeping the last one. (#4)
+- README "Note on naming" and the `docs/REFERENCE-IMPLEMENTATION.md` naming
+  note no longer say the AIM backend emits only the pre-scoping `agent.*`
+  names; they state that it dual-emits the scoped `gen_ai.agent.*` attributes
+  alongside them. (#7)
+- `examples/langchain.py` links to this repository under its current
+  organization, `opena2a-standards`; `examples/test_links.py` keeps the
+  examples from linking the old organization URL. (#8)
+- The top-level README names the technique taxonomy "AI Agent Threat Matrix",
+  the name `extensions/org.opena2a/registry.yaml` and its README use. (#9)
 
 ## 2026-06-15 — gen_ai.agent.* namespace sync
 
