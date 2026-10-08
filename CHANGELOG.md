@@ -39,6 +39,9 @@ so entries are dated by proposal milestone rather than release version.
   note no longer say the AIM backend emits only the pre-scoping `agent.*`
   names; they state that it dual-emits the scoped `gen_ai.agent.*` attributes
   alongside them. (#7)
+- `examples/langchain.py` links to this repository under its current
+  organization, `opena2a-standards`; `examples/test_links.py` keeps the
+  examples from linking the old organization URL. (#8)
 
 ## 2026-06-15 — gen_ai.agent.* namespace sync
 
