@@ -35,6 +35,10 @@ so entries are dated by proposal milestone rather than release version.
 - `extensions/org.opena2a/check.py` reports an attribute without an id as a
   FAIL line instead of crashing, and rejects duplicate attribute keys in the
   example span instead of keeping the last one. (#4)
+- README "Note on naming" and the `docs/REFERENCE-IMPLEMENTATION.md` naming
+  note no longer say the AIM backend emits only the pre-scoping `agent.*`
+  names; they state that it dual-emits the scoped `gen_ai.agent.*` attributes
+  alongside them. (#7)
 
 ## 2026-06-15 — gen_ai.agent.* namespace sync
 

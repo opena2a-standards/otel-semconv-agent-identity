@@ -71,7 +71,7 @@ For `scan.verdict` specifically: in the OpenA2A reference implementation, the va
 
 The AIM backend at https://github.com/opena2a-org/agent-identity-management computes the producer-side signals today in `apps/backend/internal/application/fga_engine.go` — identity, capability, trust and drift scores, and the FGA decision path are emitted live; the scan verdict is read from a producer-populated `agent_security_contexts` record (see the Framing section for the scanner integration status).
 
-Note on naming: the live AIM emitter currently uses the pre-scoping attribute names (`agent.trust_score`, `agent.drift_score`, `agent.scan_verdict`, etc.) documented in `docs/REFERENCE-IMPLEMENTATION.md`. The proposal in this repo and upstream #291 scopes them under `gen_ai.agent.*`, splits the scores into `.score`/`.method` pairs, and adds the `.method` tokens. AIM's migration to the scoped names is tracked and lands with the emitter update; until then the proposal is intentionally ahead of the reference emitter.
+Note on naming: the AIM backend dual-emits both name sets on the `fga.authorize` span. It sets the scoped `gen_ai.agent.*` attributes from this proposal and upstream #291 (`gen_ai.agent.capability`, `gen_ai.agent.public_key.algorithm`, and the trust, drift and scan `.score`/`.verdict` values with their `.method` tokens) in `apps/backend/internal/telemetry/genai_attrs.go`. It also keeps the pre-scoping names (`agent.trust_score`, `agent.drift_score`, `agent.scan_verdict`, etc.) documented in `docs/REFERENCE-IMPLEMENTATION.md`. The pre-scoping `agent.*` set is retired once the dashboards that read it move to the scoped names.
 
 A LangChain instrumentation example is at `examples/langchain.py`.
 
