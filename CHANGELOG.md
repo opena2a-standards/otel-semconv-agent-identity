@@ -42,6 +42,8 @@ so entries are dated by proposal milestone rather than release version.
 - `examples/langchain.py` links to this repository under its current
   organization, `opena2a-standards`; `examples/test_links.py` keeps the
   examples from linking the old organization URL. (#8)
+- The top-level README names the technique taxonomy "AI Agent Threat Matrix",
+  the name `extensions/org.opena2a/registry.yaml` and its README use. (#9)
 
 ## 2026-06-15 — gen_ai.agent.* namespace sync
 

@@ -22,7 +22,7 @@ Where it stops today: the upstream pull request is open and not merged.
 
 A broker denies a tool call that would have carried data out of a session. The operators want to know which grant it ran under, which data labels the session had accumulated, and which catalogued attack technique the denial relates to, in the telemetry they already collect.
 
-Five vendor attributes under `org.opena2a.*` carry the session's labels, the labels one operation admitted, the grant id, the egress decision and the Agent Threat Matrix technique id, each defined by the specification that owns the value.
+Five vendor attributes under `org.opena2a.*` carry the session's labels, the labels one operation admitted, the grant id, the egress decision and the AI Agent Threat Matrix technique id, each defined by the specification that owns the value.
 
 What you can do today:
 
