@@ -2,9 +2,28 @@
 
 OpenTelemetry semantic conventions for AI agent authorization observability. Reference implementation for the proposal filed at https://github.com/open-telemetry/semantic-conventions-genai/issues/180.
 
-## What this is
+## The attributes
 
-A focused proposal capturing agent authorization decisions in OpenTelemetry traces, metrics, and logs. The attributes are scoped under the `gen_ai.agent.*` namespace per the OpenTelemetry GenAI semantic conventions; the proposal is filed upstream as [open-telemetry/semantic-conventions-genai#291](https://github.com/open-telemetry/semantic-conventions-genai/pull/291) (issue [#180](https://github.com/open-telemetry/semantic-conventions-genai/issues/180)). The OpenA2A Agent Identity Management (AIM) backend is the reference producer; see the Reference implementation section for its current emission status.
+See [`registry/agent.yaml`](registry/agent.yaml) and [`registry/fga.yaml`](registry/fga.yaml) for full definitions.
+
+Core identity:
+- `gen_ai.agent.id`
+- `gen_ai.agent.public_key.algorithm` (fail-closed verifier guidance on unknown algorithm identifiers)
+
+Action context:
+- `gen_ai.agent.capability`
+
+Decision inputs (producer-emitted), each paired with an opaque method/version token:
+- `gen_ai.agent.trust.score` / `gen_ai.agent.trust.method`
+- `gen_ai.agent.drift.score` / `gen_ai.agent.drift.method`
+- `gen_ai.agent.scan.verdict` / `gen_ai.agent.scan.method`
+
+FGA decision path (namespace placement pending the working-group decision in #180; deferred from #291):
+- `fga.step`
+- `fga.outcome`
+- `fga.denied_by`
+
+The `trust.score`, `drift.score`, and `scan.verdict` attributes are producer-emitted decision inputs, not normative computed values: see [Framing](docs/framing.md#framing).
 
 ## Use cases
 
@@ -36,57 +55,27 @@ Where it stops today: these five attributes are vendor-namespaced and not filed 
 
 Why you can check this yourself: the attribute definitions are [`registry/agent.yaml`](registry/agent.yaml) and [`registry/fga.yaml`](registry/fga.yaml); the upstream filing is [open-telemetry/semantic-conventions-genai#291](https://github.com/open-telemetry/semantic-conventions-genai/pull/291) (issue [#180](https://github.com/open-telemetry/semantic-conventions-genai/issues/180)); the vendor extension, its example span and its check with tests are under [`extensions/org.opena2a/`](extensions/org.opena2a/); the LangChain bridge is in [`examples/`](examples/); and the reference producer is the AIM backend.
 
-## The attributes
-
-Core identity:
-- `gen_ai.agent.id`
-- `gen_ai.agent.public_key.algorithm` (fail-closed verifier guidance on unknown algorithm identifiers)
-
-Action context:
-- `gen_ai.agent.capability`
-
-Decision inputs (producer-emitted), each paired with an opaque method/version token:
-- `gen_ai.agent.trust.score` / `gen_ai.agent.trust.method`
-- `gen_ai.agent.drift.score` / `gen_ai.agent.drift.method`
-- `gen_ai.agent.scan.verdict` / `gen_ai.agent.scan.method`
-
-FGA decision path (namespace placement pending the working-group decision in #180; deferred from #291):
-- `fga.step`
-- `fga.outcome`
-- `fga.denied_by`
-
-See `registry/agent.yaml` and `registry/fga.yaml` for full definitions.
-
 ## Vendor attributes
 
 `extensions/org.opena2a/` defines five `org.opena2a.*` vendor attributes for agent authorization spans: session and accessed data labels, the grant id, the egress decision, and the threat technique id. They are not filed upstream and are not part of #291 or #180. See `extensions/org.opena2a/README.md` for the definitions, an example span and the consistency check.
 
-## Framing
-
-The `trust.score`, `drift.score`, and `scan.verdict` attributes are producer-emitted decision inputs, not normative computed values. The producer computes the score (or selects the verdict) using whatever method makes sense for their domain. The convention only standardizes the attribute name, type, and range (or value set) so downstream observers can correlate. Each is paired with a `.method` token — an opaque, producer-scoped string for the method and version that produced the value, compared for equality only — so a consumer can distinguish a change in the scoring method from a real change in the agent's behaviour. Producers documenting their scoring or scanning methodology is recommended but not normative.
-
-For `scan.verdict` specifically: in the OpenA2A reference implementation, the value is read from a per-agent `agent_security_contexts` record that is intended to be written by an integration with the HackMyAgent scanner via the Registry's `PATCH /internal/asc/:agentId` endpoint. That producer integration is on the roadmap; the demo seeds a `'CLEAN'` value into the same record so the attribute appears on the trace end-to-end. Other producers can wire any scanner they trust to the same convention.
-
-## Reference implementation
-
-The AIM backend at https://github.com/opena2a-org/agent-identity-management computes the producer-side signals today in `apps/backend/internal/application/fga_engine.go` — identity, capability, trust and drift scores, and the FGA decision path are emitted live; the scan verdict is read from a producer-populated `agent_security_contexts` record (see the Framing section for the scanner integration status).
-
-Note on naming: the AIM backend dual-emits both name sets on the `fga.authorize` span. It sets the scoped `gen_ai.agent.*` attributes from this proposal and upstream #291 (`gen_ai.agent.capability`, `gen_ai.agent.public_key.algorithm`, and the trust, drift and scan `.score`/`.verdict` values with their `.method` tokens) in `apps/backend/internal/telemetry/genai_attrs.go`. It also keeps the pre-scoping names (`agent.trust_score`, `agent.drift_score`, `agent.scan_verdict`, etc.) documented in `docs/REFERENCE-IMPLEMENTATION.md`. The pre-scoping `agent.*` set is retired once the dashboards that read it move to the scoped names.
-
-A LangChain instrumentation example is at `examples/langchain.py`.
-
 ## Try it
 
-Run the AIM backend OTel demo stack at `apps/backend/deployments/otel-demo` and observe FGA authorization spans in Grafana Tempo with these 9 attributes attached.
+Run the AIM backend OTel demo stack at `apps/backend/deployments/otel-demo` and observe FGA authorization spans in Grafana Tempo. The run steps, dashboards and sample queries are in [`docs/REFERENCE-IMPLEMENTATION.md`](docs/REFERENCE-IMPLEMENTATION.md#quick-start).
 
 ## Standards process
 
 This proposal is tracked at https://github.com/open-telemetry/semantic-conventions-genai/issues/180. Comments and review welcome there.
 
-## Contributing
+## Documentation
 
-See `CONTRIBUTING.md`.
+- [`docs/framing.md`](docs/framing.md): what this proposal is, and why the trust, drift and scan attributes are producer-emitted decision inputs.
+- [`docs/REFERENCE-IMPLEMENTATION.md`](docs/REFERENCE-IMPLEMENTATION.md#reference-implementation): how the AIM backend emits these attributes, its naming note, its demo stack and sample queries.
+- [`examples/README.md`](examples/README.md): the LangChain to OpenTelemetry bridge.
+- [`extensions/org.opena2a/README.md`](extensions/org.opena2a/README.md): the vendor attribute definitions, an example span and the consistency check.
+- [`CHANGELOG.md`](CHANGELOG.md)
+- [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
 ## License
 
-Apache 2.0.
+[Apache 2.0](LICENSE).

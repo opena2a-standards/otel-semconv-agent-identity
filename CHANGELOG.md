@@ -29,6 +29,11 @@ so entries are dated by proposal milestone rather than release version.
   `org.opena2a.session.label` keeps a singular name for an array value; the
   README states label-set ordering as a SHOULD, matching the registry, and
   places `fga.outcome` in issue #180 (deferred from #291). (#4)
+- The top-level README is shorter and opens with the attribute list and a
+  link to `registry/agent.yaml`. Its "What this is" and "Framing" sections
+  moved, as written, to the new `docs/framing.md`; its "Reference
+  implementation" section and the full "Try it" sentence moved to
+  `docs/REFERENCE-IMPLEMENTATION.md`. A Documentation section links both.
 
 ### Fixed
 

@@ -4,6 +4,18 @@ This file mirrors `apps/backend/docs/OBSERVABILITY.md` in https://github.com/ope
 
 When `OBSERVABILITY.md` in the AIM repo is updated, this file should be updated to match.
 
+## Reference implementation
+
+The AIM backend at https://github.com/opena2a-org/agent-identity-management computes the producer-side signals today in `apps/backend/internal/application/fga_engine.go` — identity, capability, trust and drift scores, and the FGA decision path are emitted live; the scan verdict is read from a producer-populated `agent_security_contexts` record (see the [Framing](framing.md#framing) section for the scanner integration status).
+
+Note on naming: the AIM backend dual-emits both name sets on the `fga.authorize` span. It sets the scoped `gen_ai.agent.*` attributes from this proposal and upstream #291 (`gen_ai.agent.capability`, `gen_ai.agent.public_key.algorithm`, and the trust, drift and scan `.score`/`.verdict` values with their `.method` tokens) in `apps/backend/internal/telemetry/genai_attrs.go`. It also keeps the pre-scoping names (`agent.trust_score`, `agent.drift_score`, `agent.scan_verdict`, etc.) documented in `docs/REFERENCE-IMPLEMENTATION.md`. The pre-scoping `agent.*` set is retired once the dashboards that read it move to the scoped names.
+
+A LangChain instrumentation example is at `examples/langchain.py`.
+
+## Try it
+
+Run the AIM backend OTel demo stack at `apps/backend/deployments/otel-demo` and observe FGA authorization spans in Grafana Tempo with these 9 attributes attached.
+
 ---
 
 # AIM Backend Observability
