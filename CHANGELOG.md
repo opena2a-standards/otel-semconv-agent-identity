@@ -34,6 +34,8 @@ so entries are dated by proposal milestone rather than release version.
   moved, as written, to the new `docs/framing.md`; its "Reference
   implementation" section and the full "Try it" sentence moved to
   `docs/REFERENCE-IMPLEMENTATION.md`. A Documentation section links both.
+- The top-level README is shorter: its "Use cases" section moved, as written,
+  to the new `docs/USE-CASES.md`, linked from the Documentation section.
 
 ### Fixed
 
