@@ -40,7 +40,11 @@ class FolderTest(unittest.TestCase):
     def test_readmes_use_the_registry_taxonomy_name(self):
         note = {a["id"]: a for a in registry_attrs()}["org.opena2a.threat.technique_id"]["note"]
         name = re.match(r"Home: (.+?) \(", note).group(1)
-        for readme in (FOLDER / "README.md", FOLDER.parents[1] / "README.md"):
+        for readme in (
+            FOLDER / "README.md",
+            FOLDER.parents[1] / "README.md",
+            FOLDER.parents[1] / "docs" / "USE-CASES.md",
+        ):
             text = readme.read_text()
             self.assertEqual(text.count("Threat Matrix"), text.count(name), readme)
 
