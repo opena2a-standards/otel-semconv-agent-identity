@@ -33,6 +33,15 @@ The `trust.score`, `drift.score`, and `scan.verdict` attributes are producer-emi
 
 Run the AIM backend OTel demo stack at `apps/backend/deployments/otel-demo` and observe FGA authorization spans in Grafana Tempo. The run steps, dashboards and sample queries are in [`docs/REFERENCE-IMPLEMENTATION.md`](docs/REFERENCE-IMPLEMENTATION.md#quick-start).
 
+## Who this is for
+
+- **Security leaders and CISOs**: what to require every agent platform to record about an authorization decision.
+- **IAM professionals and identity architects**: how the agent id, key algorithm and grant on a span relate to the identities you issue.
+- **Platform and security engineers, and agent developers**: why a call was refused, and how to emit and check these attributes.
+- **GRC, audit and compliance readers, and standards reviewers**: the record of one decision, and how it relates to existing OpenTelemetry conventions.
+
+[`docs/USE-CASES.md`](docs/USE-CASES.md) gives each reader's question, where the definitions answer it, and the use cases for each.
+
 ## Standards process
 
 This proposal is tracked at https://github.com/open-telemetry/semantic-conventions-genai/issues/180. Comments and review welcome there.
@@ -40,7 +49,7 @@ This proposal is tracked at https://github.com/open-telemetry/semantic-conventio
 ## Documentation
 
 - [`docs/framing.md`](docs/framing.md): what this proposal is, and why the trust, drift and scan attributes are producer-emitted decision inputs.
-- [`docs/USE-CASES.md`](docs/USE-CASES.md): two use cases, each with what you can check today and where it stops.
+- [`docs/USE-CASES.md`](docs/USE-CASES.md): who reads these conventions, and five use cases, each with what you can check today and where it stops.
 - [`docs/REFERENCE-IMPLEMENTATION.md`](docs/REFERENCE-IMPLEMENTATION.md#reference-implementation): how the AIM backend emits these attributes, its naming note, its demo stack and sample queries.
 - [`examples/README.md`](examples/README.md): the LangChain to OpenTelemetry bridge.
 - [`extensions/org.opena2a/README.md`](extensions/org.opena2a/README.md): the vendor attribute definitions, an example span and the consistency check.
